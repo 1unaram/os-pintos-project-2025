@@ -101,7 +101,7 @@ void run_automated_warehouse(char **argv)
         tid_t* threads = malloc(sizeof(tid_t) * (robot_count + 1));
 
         // 2) Create thread for cnt
-        threads[0] = thread_create("CNT", 0, &test_cnt, NULL);
+        threads[0] = thread_create("CNT", 0, &cnn_thread, NULL);
 
         // 3) Create threads for robots
         int idxs[6] = {1, 2, 3, 4, 5, 6};
