@@ -22,7 +22,7 @@ typedef enum { UP, DOWN, LEFT, RIGHT } move_direction;
 
 
 // Print each robot's name and task
-void print_robot_info() {
+void print_robot_info(struct robot* robots, int robot_count) {
         printf("==================== * Robots Info * ====================\n");
         for (int i = 0; i < robot_count; i++) {
                 printf("| %s | Position: (%d, %d) | Payload: %d/%d | Destination: %c |\n",
@@ -55,21 +55,24 @@ void move_robot(struct robot *r, move_direction dir) {
 }
 
 
-
 // robot thread
 void robot_thread(void *aux){
         struct robot *r = (struct robot *)aux;
 
         while(1){
-                // printf("\n[ Thread for robot %s ]\n", r->name);
-                // printf("robot %s is at (%d, %d)\n", r->name, r->row, r->col);
-                // printf("robot %s is %d index\n", r->name, r->index);
-                // printf("robot %s is carrying %d\n", r->name, r->current_payload);
-                // printf("robot %s is doing %d\n", r->name, r->required_payload);
-                // printf("robot %s is going to %c\n\n", r->name, r->required_dock);
 
                 // [1] Wait until the robot is unblocked
                 block_thread();
+
+                // [2] Check message box
+                if (boxes_from_central_control_node[r->index].dirtyBit) {
+                        struct message msg = boxes_from_central_control_node[r->index].msg;
+                        printf("Message to %s: Row: %d, Col: %d, Payload: %d/%d, Command: %d\n",
+                               r->name, msg.row, msg.col, msg.current_payload,
+                               msg.required_payload, msg.cmd);
+
+                        boxes_from_central_control_node[r->index].dirtyBit = 0;
+                }
 
         }
 }
@@ -90,7 +93,7 @@ void cnn_thread(){
         }
 
         // [2] Print robot info
-        print_robot_info();
+        print_robot_info(robots, robot_count);
 
         // [3] Create message boxes
         boxes_from_central_control_node = malloc(sizeof(struct messsage_box) * robot_count);
@@ -106,12 +109,47 @@ void cnn_thread(){
                 robots_threads[i] = thread_create(robots[i].name, 0, &robot_thread, &robots[i]);
         }
 
-        move_robot(&robots[0], UP);
-        move_robot(&robots[0], UP);
-        move_robot(&robots[0], UP);
 
         while(1){
                 printf("[ Central control node is running... ]\n");
+
+                // Check message boxes
+                // for (int i = 0; i < robot_count; i++) {
+                //         if (boxes_from_robots[i].dirtyBit) {
+
+                //                 struct message msg = boxes_from_robots[i].msg;
+                //                 printf("Message from %s: Row: %d, Col: %d, Payload: %d/%d, Command: %d\n",
+                //                        robots[i].name, msg.row, msg.col, msg.current_payload,
+                //                        msg.required_payload, msg.cmd);
+                //                 boxes_from_robots[i].dirtyBit = 0; // Reset dirty bit
+                //         }
+                // }
+
+                // [5] Move robots
+                // for (int i = 0; i < robot_count; i++) {
+                //         if (robots[i].current_payload > 0) {
+                //                 // Move to the required dock
+                //                 if (robots[i].row < ROW_W) {
+                //                         move_robot(&robots[i], DOWN);
+                //                 } else if (robots[i].col < COL_W) {
+                //                         move_robot(&robots[i], RIGHT);
+                //                 } else {
+                //                         robots[i].current_payload--;
+                //                         robots[i].required_payload--;
+                //                 }
+                //         } else {
+                //                 // Move to the source
+                //                 if (robots[i].row > ROW_S) {
+                //                         move_robot(&robots[i], UP);
+                //                 } else if (robots[i].col > COL_S) {
+                //                         move_robot(&robots[i], LEFT);
+                //                 } else {
+                //                         robots[i].current_payload++;
+                //                         robots[i].required_payload++;
+                //                 }
+                //         }
+                // }
+
                 print_map(robots, robot_count);
                 thread_sleep(1000);
                 block_thread();
@@ -154,7 +192,6 @@ void run_automated_warehouse(char **argv)
 
         // [1] Parse parameters
         parse_parameters(argv);
-
 
         // [2] Create Central Control Node threads
         tid_t thread = malloc(sizeof(tid_t));
