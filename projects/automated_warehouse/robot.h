@@ -6,12 +6,14 @@
  */
 struct robot {
     const char* name;
+    int index;
     int row;
     int col;
+    int current_payload;
     int required_payload;
-    int current_payload; 
+    char required_dock;
 };
 
-void setRobot(struct robot* _robot, const char* name, int row, int col, int required_payload, int current_payload);
+void setRobot(struct robot* _robot, const char* name, int index, int row, int col, int current_payload, int required_payload, char required_dock);
 
 #endif

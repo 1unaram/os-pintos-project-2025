@@ -9,18 +9,123 @@
 #include "devices/timer.h"
 
 #include "projects/automated_warehouse/aw_manager.h"
+#include "projects/automated_warehouse/aw_message.h"
 
 struct robot* robots;
 int robot_count;
 char **robot_tasks;
 char **robot_names;
+struct messsage_box* boxes_from_central_control_node;
+struct messsage_box* boxes_from_robots;
 
+typedef enum { UP, DOWN, LEFT, RIGHT } move_direction;
+
+
+// Print each robot's name and task
+void print_robot_info() {
+        printf("==================== * Robots Info * ====================\n");
+        for (int i = 0; i < robot_count; i++) {
+                printf("| %s | Position: (%d, %d) | Payload: %d/%d | Destination: %c |\n",
+                        robots[i].name,
+                        robots[i].row, robots[i].col,
+                        robots[i].current_payload, robots[i].required_payload,
+                        robots[i].required_dock
+                );
+        }
+        printf("=========================================================\n\n");
+}
+
+
+// Move robot
+void move_robot(struct robot *r, move_direction dir) {
+        switch (dir) {
+            case UP:
+                if (r->row > 0) r->row--;
+                break;
+            case DOWN:
+                if (r->row < MAP_HEIGHT - 1) r->row++;
+                break;
+            case LEFT:
+                if (r->col > 0) r->col--;
+                break;
+            case RIGHT:
+                if (r->col < MAP_WIDTH - 1) r->col++;
+                break;
+        }
+}
+
+
+
+// robot thread
+void robot_thread(void *aux){
+        struct robot *r = (struct robot *)aux;
+
+        while(1){
+                // printf("\n[ Thread for robot %s ]\n", r->name);
+                // printf("robot %s is at (%d, %d)\n", r->name, r->row, r->col);
+                // printf("robot %s is %d index\n", r->name, r->index);
+                // printf("robot %s is carrying %d\n", r->name, r->current_payload);
+                // printf("robot %s is doing %d\n", r->name, r->required_payload);
+                // printf("robot %s is going to %c\n\n", r->name, r->required_dock);
+
+                // [1] Wait until the robot is unblocked
+                block_thread();
+
+        }
+}
+
+
+// central control node thread
+void cnn_thread(){
+
+        // [1] Create and Set robots
+        robots = malloc(sizeof(struct robot) * robot_count);
+        robot_names = malloc(sizeof(char *) * robot_count);
+        for (int i = 0; i < robot_count; i++){
+                robot_names[i] = malloc(sizeof(char) * 3);
+                snprintf(robot_names[i], sizeof(robot_names), "R%d", i + 1);
+
+                // set robot and place robot at W
+                setRobot(&robots[i], robot_names[i], i, 6, 5, 0, robot_tasks[i][0] - '0', robot_tasks[i][1]);
+        }
+
+        // [2] Print robot info
+        print_robot_info();
+
+        // [3] Create message boxes
+        boxes_from_central_control_node = malloc(sizeof(struct messsage_box) * robot_count);
+        boxes_from_robots = malloc(sizeof(struct messsage_box) * robot_count);
+        for (int i = 0; i < robot_count; i++){
+                boxes_from_central_control_node[i].dirtyBit = 0;
+                boxes_from_robots[i].dirtyBit = 0;
+        }
+
+        // [4] Create robots threads
+        tid_t* robots_threads = malloc(sizeof(tid_t) * robot_count);
+        for (int i = 0; i < robot_count; i++) {
+                robots_threads[i] = thread_create(robots[i].name, 0, &robot_thread, &robots[i]);
+        }
+
+        move_robot(&robots[0], UP);
+        move_robot(&robots[0], UP);
+        move_robot(&robots[0], UP);
+
+        while(1){
+                printf("[ Central control node is running... ]\n");
+                print_map(robots, robot_count);
+                thread_sleep(1000);
+                block_thread();
+        }
+}
+
+
+// Parse command line arguments
 void parse_parameters(char **argv) {
 
-        // 1) Number of robots
+        // 1) Set number of robots
         robot_count = atoi(argv[1]);
 
-        // 2) Robot tasks
+        // 2) Set robot's tasks
         robot_tasks = malloc(sizeof(char *) * robot_count);
 
         char buffer[256];
@@ -35,37 +140,8 @@ void parse_parameters(char **argv) {
                 robot_tasks[index] = malloc(3);
                 strlcpy(robot_tasks[index], token, 3);
                 robot_tasks[index][sizeof(robot_tasks[index]) - 1] = '\0';
-                index++;
                 token = strtok_r(NULL, ":", &saveptr);
-        }
-}
-
-// Print each robot's name and task
-void print_robot_info() {
-        printf("Robot Info:\n");
-        for (int i = 0; i < robot_count; i++) {
-                printf("%s -> %s\n", robot_names[i], robot_tasks[i]);
-        }
-        printf("\n");
-}
-
-
-// test code for robot thread
-void test_thread(void* aux){
-        int idx = *((int *)aux);
-        int test = 0;
-        while(1){
-                printf("thread %d : %d\n", idx, test++);
-                thread_sleep(idx * 1000);
-        }
-}
-
-// test code for central control node thread
-void cnn_thread(){
-        while(1){
-                print_map(robots, robot_count);
-                thread_sleep(1000);
-                block_thread();
+                index++;
         }
 }
 
@@ -74,40 +150,14 @@ void run_automated_warehouse(char **argv)
 {
         init_automated_warehouse(argv); // do not remove this
 
-
-        printf("\n=========== Start ===========\n\n");
         printf("implement automated warehouse!\n\n");
-
 
         // [1] Parse parameters
         parse_parameters(argv);
 
 
-        // [2] Create and Set robots
-        robots = malloc(sizeof(struct robot) * robot_count);
-        robot_names = malloc(sizeof(char *) * robot_count);
+        // [2] Create Central Control Node threads
+        tid_t thread = malloc(sizeof(tid_t));
+        thread = thread_create("CNT", 0, &cnn_thread, NULL);
 
-        for (int i = 0; i < robot_count; i++){
-                robot_names[i] = malloc(sizeof(char) * 3);
-                snprintf(robot_names[i], sizeof(robot_names), "R%d", i + 1);
-                setRobot(&robots[i], robot_names[i], 5, 5, 0, 0);
-        }
-
-        // [3] Print robot info
-        print_robot_info();
-
-        // [4] Create threads
-        // 1) Mallocate threads for ccn and robots
-        tid_t* threads = malloc(sizeof(tid_t) * (robot_count + 1));
-
-        // 2) Create thread for cnt
-        threads[0] = thread_create("CNT", 0, &cnn_thread, NULL);
-
-        // 3) Create threads for robots
-        int idxs[6] = {1, 2, 3, 4, 5, 6};
-        for (int i = 0; i < robot_count; i++){
-                threads[i + 1] = thread_create(robots[i].name, 0, &test_thread, &idxs[i + 1]);
-        }
-
-        printf("=========== End ===========\n\n");
 }

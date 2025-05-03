@@ -13,12 +13,13 @@ const char thread_status[4][10] = {
 };
 
 const char map_draw_default[MAP_HEIGHT][MAP_WIDTH] = {
-    {'X', 'X', 'A', 'X', 'X', 'X', 'X' },
-    {'X', '1', ' ', '2', '3', '4', 'X' },
-    {'B', ' ', ' ', ' ', ' ', ' ', 'X' },
-    {'X', ' ', ' ', ' ', ' ', ' ', 'X' },
-    {'X', '5', ' ', '6', '7', 'S', 'X' },
-    {'X', 'X', 'C', 'X', 'X', 'W', 'X' }
+    {'X', 'X', 'X', 'X', 'X', 'X', 'X' },
+    {'A', ' ', ' ', '7', ' ', ' ', 'X' },
+    {'X', ' ', '1', 'X', '4', ' ', 'X' },
+    {'B', ' ', '2', 'X', '5', ' ', 'X' },
+    {'X', ' ', '3', 'X', '6', ' ', 'X' },
+    {'C', ' ', ' ', ' ', ' ', 'S', 'X' },
+    {'X', 'X', 'X', 'X', 'X', 'W', 'X' }
 };
 
 /**
@@ -44,7 +45,7 @@ void _print_place(struct robot* __robots, int __number_of_robots, int __row, int
  * It requires array of robots and length of array
  * It must be called before unblocking robot threads
  */
-void print_map(struct robot* __robots, int __number_of_robots){    
+void print_map(struct robot* __robots, int __number_of_robots){
     printf("STEP_INFO_START::%d\n", step);
     printf("MAP_INFO::\n");
     for (int row = 0; row < MAP_HEIGHT; row++){
