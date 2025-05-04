@@ -35,7 +35,6 @@ void print_robot_info(struct robot* robots, int robot_count) {
         printf("=========================================================\n\n");
 }
 
-
 // Move robot
 void move_robot(struct robot *r, move_direction dir) {
         switch (dir) {
@@ -55,9 +54,26 @@ void move_robot(struct robot *r, move_direction dir) {
 }
 
 
+// UP, DOWN, LEFT, RIGHT
+int dr[4] = {-1, 1, 0, 0};
+int dc[4] = {0, 0, -1, 1};
+
+typedef struct {
+        int row;
+        int col;
+} Node;
+
 // robot thread
 void robot_thread(void *aux){
         struct robot *r = (struct robot *)aux;
+
+        int visited[MAP_HEIGHT][MAP_WIDTH] = {0};
+        visited[start_row][start_col] = 1;
+
+        Node queue[MAP_HEIGHT * MAP_WIDTH];
+        int front = 0, rear = 0;
+
+        queue[rear++] = (Node){ start_row, start_col, 0 };
 
         while(1){
 
@@ -73,6 +89,45 @@ void robot_thread(void *aux){
 
                         boxes_from_central_control_node[r->index].dirtyBit = 0;
                 }
+
+                // [3] Move robot
+                if(front < rear) {
+                        Node cur = queue[front++];
+                        // if (cur.row == target_row && cur.col == target_col) {
+                        //         // 도착지에 도착한 경우
+
+                        //         continue;
+                        // }
+                        // 4방향 탐색
+                        for (int i = 0; i < 4; i++) {
+                            int nr = cur.row + dr[i];
+                            int nc = cur.col + dc[i];
+
+                            // 맵 경계 및 이동 가능 여부 체크
+                            if (nr >= 0 && nr < MAP_HEIGHT
+                                && nc >= 0 && nc < MAP_WIDTH
+                                && !visited[nr][nc]
+                                && (map_draw_default[nr][nc] != ' '
+                                || isTarget())) {
+                                queue[rear++] = (Node){ nr, nc };
+                                visited[nr][nc] = 1;
+                                continue;
+                            }
+                        }
+                }
+
+                // [4] Send message to central control node
+                struct message msg;
+                msg.row = r->row;
+                msg.col = r->col;
+                msg.current_payload = r->current_payload;
+                msg.required_payload = r->required_payload;
+                msg.cmd = 0; // Command to be sent
+                boxes_from_central_control_node[r->index].msg = msg;
+                boxes_from_central_control_node[r->index].dirtyBit = 1;
+                printf("Message sent from %s: Row: %d, Col: %d, Payload: %d/%d, Command: %d\n",
+                       r->name, msg.row, msg.col, msg.current_payload,
+                       msg.required_payload, msg.cmd);
 
         }
 }
@@ -114,16 +169,17 @@ void cnn_thread(){
                 printf("[ Central control node is running... ]\n");
 
                 // Check message boxes
-                // for (int i = 0; i < robot_count; i++) {
-                //         if (boxes_from_robots[i].dirtyBit) {
+                for (int i = 0; i < robot_count; i++) {
+                        printf("Checking message box for %s...\n", robots[i].name);
+                        if (boxes_from_robots[i].dirtyBit) {
 
-                //                 struct message msg = boxes_from_robots[i].msg;
-                //                 printf("Message from %s: Row: %d, Col: %d, Payload: %d/%d, Command: %d\n",
-                //                        robots[i].name, msg.row, msg.col, msg.current_payload,
-                //                        msg.required_payload, msg.cmd);
-                //                 boxes_from_robots[i].dirtyBit = 0; // Reset dirty bit
-                //         }
-                // }
+                                struct message msg = boxes_from_robots[i].msg;
+                                printf("Message from %s: Row: %d, Col: %d, Payload: %d/%d, Command: %d\n",
+                                       robots[i].name, msg.row, msg.col, msg.current_payload,
+                                       msg.required_payload, msg.cmd);
+                                boxes_from_robots[i].dirtyBit = 0; // Reset dirty bit
+                        }
+                }
 
                 // [5] Move robots
                 // for (int i = 0; i < robot_count; i++) {
@@ -150,8 +206,8 @@ void cnn_thread(){
                 //         }
                 // }
 
+                increase_step();
                 print_map(robots, robot_count);
-                thread_sleep(1000);
                 block_thread();
         }
 }

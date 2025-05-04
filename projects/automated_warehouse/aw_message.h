@@ -18,14 +18,20 @@ struct message {
     /** required paylod of robot */
     int required_payload;
 
+    // int next_row;
+    // int next_col;
+
     //
     // To robots
     //
     /** next command for robot */
     int cmd;
+
+    int next_row;
+    int next_col;
 };
 
-/** 
+/**
  * Simple message box which can receive only one message from sender
 */
 struct messsage_box {
