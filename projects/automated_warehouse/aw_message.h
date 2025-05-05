@@ -32,7 +32,6 @@ struct message {
     int cmd;
     int target_row;
     int target_col;
-    int payload;
 };
 
 /**

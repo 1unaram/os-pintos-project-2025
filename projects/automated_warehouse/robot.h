@@ -19,8 +19,12 @@ struct robot {
     int load_location_col;
     int unload_location_row;
     int unload_location_col;
+
+    int priority; // Priority of the robot (lower number means higher priority)
+
+    int is_stopped; // 0: moving, 1: stopped
 };
 
-void setRobot(struct robot* _robot, const char* name, int index, int row, int col);
+void setRobot(struct robot* _robot, const char* name, int index, int row, int col, int priority);
 
 #endif

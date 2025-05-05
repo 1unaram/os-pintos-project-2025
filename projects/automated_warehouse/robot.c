@@ -3,7 +3,7 @@
 /**
  * A function setting up robot structure
  */
-void setRobot(struct robot* _robot, const char* name, int index, int row, int col){
+void setRobot(struct robot* _robot, const char* name, int index, int row, int col, int priority) {
     _robot->name = name;
     _robot->index = index;
     _robot->row = row;
@@ -17,4 +17,8 @@ void setRobot(struct robot* _robot, const char* name, int index, int row, int co
     _robot->load_location_col = -1; // Initialize load location column
     _robot->unload_location_row = -1; // Initialize unload location row
     _robot->unload_location_col = -1; // Initialize unload location column
+
+    _robot->priority = priority;
+
+    _robot->is_stopped = 0;
 }
