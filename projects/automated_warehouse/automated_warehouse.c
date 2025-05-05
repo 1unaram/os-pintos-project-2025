@@ -70,23 +70,6 @@ int check_all_robots_done() {
 }
 
 
-
-// Print each robot's name and task
-void print_robot_info() {
-        printf("=========================== * Robots Info * ===========================\n");
-        for (int i = 0; i < robot_count; i++) {
-                struct robot* r = &robots[i];
-                printf("| %s | Position: (%d, %d) | Payload: %d/%d | Load Location: (%d,%d) | Unload Location: (%d,%d)\n",
-                        r->name,
-                        r->row, r->col,
-                        r->current_payload, r->required_payload,
-                        r->load_location_row, r->load_location_col,
-                        r->unload_location_row, r->unload_location_col);
-        }
-        printf("=======================================================================\n\n");
-}
-
-
 // robot thread
 void robot_thread(void *aux){
         struct robot *r = (struct robot *)aux;
@@ -230,6 +213,7 @@ void send_command_to_robot(struct robot *r, CommandType cmd, int target_row, int
 // Assign next move to the robot
 void assign_next_move(struct robot *r, int path_type, int step) {
         Location next_location = shortest_path_by_bfs[r->index][path_type][step];
+        r->is_stopped = 0;
         send_command_to_robot(r, CMD_MOVE, next_location.row, next_location.col);
 }
 
@@ -338,7 +322,7 @@ void find_shortest_path_by_bfs() {
         for (int i = 0; i < robot_count; i++) {
                 struct robot *r = &robots[i];
 
-                Location start = {ROW_W, COL_W};
+                Location start = {ROW_S, COL_S};
                 Location load_location = {r->load_location_row, r->load_location_col};
                 Location unload_location = {r->unload_location_row, r->unload_location_col};
 
@@ -352,28 +336,47 @@ void find_shortest_path_by_bfs() {
 
 
 // Check for collision
-int check_collision(struct robot *r, int steps[]) {
+int check_collision(struct robot *r, int steps[] ) {
 
+        int path_type = 0;
+        if (r->current_payload == 1) path_type = 1;
 
-        // 로봇의 다음 위치
-        int next_row = shortest_path_by_bfs[r->index][0][steps[r->index]].row;
-        int next_col = shortest_path_by_bfs[r->index][0][steps[r->index]].col;
+        int next_row = shortest_path_by_bfs[r->index][path_type][steps[r->index]].row;
+        int next_col = shortest_path_by_bfs[r->index][path_type][steps[r->index]].col;
+
+        if (next_row == -1 && next_col == -1) {
+                next_row = r->row;
+                next_col = r->col;
+        }
 
         // 다른 로봇과의 충돌 검사
         for (int i = 0; i < robot_count; i++) {
                 struct robot *other_robot = &robots[i];
-                if (i == r->index) continue;
+                if (i == r->index) continue; // 자기 자신은 제외
 
                 int other_robot_next_row;
                 int other_robot_next_col;
 
+                // 다른 로봇이 하역장에 도착 시 충돌 없음
+                if (other_robot->current_payload == 0 && other_robot->required_payload == 0) {
+                        return 0;
+                }
+
+                // 다른 로봇이 멈춰있으면 멈춰 있는 위치로 충돌 검사
                 if (other_robot->is_stopped == 1) {
-                        // 다른 로봇이 멈춰있으면 현재 위치로 충돌 검사
                         other_robot_next_row = other_robot->row;
                         other_robot_next_col = other_robot->col;
                 } else {
-                        other_robot_next_row = shortest_path_by_bfs[i][0][steps[i]].row;
-                        other_robot_next_col = shortest_path_by_bfs[i][0][steps[i]].col;
+                        int other_path_type = 0;
+                        if (other_robot->current_payload == 1) other_path_type = 1;
+
+                        other_robot_next_row = shortest_path_by_bfs[i][other_path_type][steps[i]].row;
+                        other_robot_next_col = shortest_path_by_bfs[i][other_path_type][steps[i]].col;
+
+                        if (other_robot_next_row == -1 && other_robot_next_col == -1) {
+                                other_robot_next_row = other_robot->row;
+                                other_robot_next_col = other_robot->col;
+                        }
                 }
 
                 printf("@@@@@ Robot %s(%d) at (%d, %d) and Robot %s(%d) at (%d, %d) ...\n", r->name, r->priority, next_row, next_col, other_robot->name, other_robot->priority, other_robot_next_row , other_robot_next_col);
@@ -417,8 +420,6 @@ void cnn_thread() {
             printf("*******************\n\n");
         }
 
-        // [5] Print robot info
-        print_robot_info();
 
         // [6] Initialize message boxes
         init_message_boxes();
@@ -437,16 +438,12 @@ void cnn_thread() {
         memset(current_robot_positions, 0, sizeof(current_robot_positions));
 
         // [8] Main loop
-        while (1) {
-                if(check_all_robots_done()) {
-                        printf("All robots have completed their tasks.\n");
-                        break; // 모든 로봇이 작업을 완료하면 종료
-                }
+        while (!check_all_robots_done()) {
 
 
                 printf("[ Central control node is running... ]\n");
 
-                print_robot_info();
+                // print_robot_info();
 
                 // [8-0] 로봇 메시지 처리
                 for (int i = 0; i < robot_count; i++) {
@@ -484,19 +481,20 @@ void cnn_thread() {
                                 // 경로 끝에 도달 -> 적재 작업 수행
                                 if (next_location.row == -1 && next_location.col == -1) {
                                         send_command_to_robot(r, CMD_LOAD, r->row, r->col);
-                                        steps[i] = 0; // 다음 경로로 초기화
+                                        steps[i] = 1; // 다음 경로로 초기화
                                         continue;
                                 }
 
 
                                 // 충돌 발생 시 대기
                                 if(check_collision(r, temp_steps)) {
-                                        printf("%s is waiting due to collision...\n", r->name);
                                         send_command_to_robot(r, CMD_WAIT, r->row, r->col);
+                                        r->is_stopped = 1;
                                         continue;
                                 }
 
                                 // 경로를 따라 이동
+                                printf("Robot %s is moving to (%d, %d)\n", r->name, next_location.row, next_location.col);
                                 assign_next_move(r, 0, steps[i]);
                                 steps[i]++;
 
@@ -513,8 +511,8 @@ void cnn_thread() {
 
                                 // 충돌 발생 시 대기
                                 if(check_collision(r, temp_steps)) {
-                                        printf("%s is waiting due to collision...\n", r->name);
                                         send_command_to_robot(r, CMD_WAIT, r->row, r->col);
+                                        r->is_stopped = 1;
                                         continue;
                                 }
 
@@ -537,6 +535,8 @@ void cnn_thread() {
                 // [8-3] 스레드 주기 제어
                 timer_msleep(1000); // 1s 대기
         }
+
+        printf("\n*** All robots are done! *** \n\n");
     }
 
 
