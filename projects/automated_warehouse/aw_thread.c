@@ -25,7 +25,7 @@ void block_thread(){
     enum intr_level old_level = intr_disable ();
     list_push_back(&blocked_threads, &thread_current()->elem);
     thread_block();
-    intr_set_level (old_level);
+    intr_set_level(old_level);
 }
 
 /**
