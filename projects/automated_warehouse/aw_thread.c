@@ -20,9 +20,7 @@ struct list blocked_threads;
  * It must be called by robot threads
  */
 void block_thread(){
-    // You must implement this
-
-    enum intr_level old_level = intr_disable ();
+    enum intr_level old_level = intr_disable();
     list_push_back(&blocked_threads, &thread_current()->elem);
     thread_block();
     intr_set_level(old_level);
@@ -33,8 +31,7 @@ void block_thread(){
  * It must be called by central control thread
  */
 void unblock_threads(){
-    enum intr_level old_level = intr_disable ();
-
+    enum intr_level old_level = intr_disable();
     while(!list_empty(&blocked_threads)){
         struct list_elem *e = list_pop_front(&blocked_threads);
         struct thread *t = list_entry(e, struct thread, elem);

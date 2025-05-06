@@ -1,7 +1,7 @@
 #ifndef __PROJECTS_AUTOMATED_WAREHOUSE_H__
 #define __PROJECTS_AUTOMATED_WAREHOUSE_H__
 
-#define MAX_PATH_LENGTH (MAP_WIDTH * MAP_HEIGHT)
+#define MAX_PATH_LENGTH (MAP_HEIGHT * MAP_WIDTH)
 
 typedef enum { UP, DOWN, LEFT, RIGHT } move_direction;
 
@@ -17,8 +17,6 @@ typedef enum {
     CMD_WAIT
 } CommandType;
 
-void run_automated_warehouse(char **argv);
-
 void init_robots();
 void init_message_boxes();
 int check_all_robots_done();
@@ -32,8 +30,11 @@ int bfs(Location start, Location end, Location* path, struct robot *r);
 void find_shortest_path_by_bfs();
 int check_collision(struct robot *r, int *steps, int *is_stopped);
 void print_robot_current_status(int *current_robot_row, int *current_robot_col,
-    int *current_robot_payload, int *current_robot_required_payload,
-    int *current_is_stopped);
+int *current_robot_payload, int *current_robot_required_payload,
+int *current_is_stopped);
 void cnn_thread();
+void parse_parameters(char **argv);
+
+void run_automated_warehouse(char **argv);
 
 #endif

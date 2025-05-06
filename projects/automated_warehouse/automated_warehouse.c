@@ -13,7 +13,7 @@
 
 #include "projects/automated_warehouse/automated_warehouse.h"
 
-
+// Global variables
 struct robot* robots;
 int robot_count;
 char **robot_tasks;
@@ -116,9 +116,9 @@ void robot_thread(void *aux) {
 
 // Initialize robot threads
 void init_robots_threads() {
-        tid_t* robots_threads = malloc(sizeof(tid_t) * robot_count);
         for (int i = 0; i < robot_count; i++) {
-                robots_threads[i] = thread_create(robots[i].name, 0, &robot_thread, &robots[i]);
+                struct robot *r = &robots[i];
+                thread_create(r->name, 0, &robot_thread, r);
         }
 }
 
@@ -321,7 +321,6 @@ void find_shortest_path_by_bfs() {
 // Check for collision between robots
 int check_collision(struct robot *r, int *steps, int *is_stopped) {
 
-
         int path_type = 0;
         if (r->current_payload == 1) path_type = 1;
 
@@ -371,7 +370,6 @@ int check_collision(struct robot *r, int *steps, int *is_stopped) {
                         return 1;
                 }
 
-
         }
 
         // [3] No collision
@@ -398,18 +396,18 @@ void cnn_thread() {
         // [1] Create and Set robots
         init_robots();
 
-        // [2] Initialize robots tasks
+        // [2] Create robots threads
+        init_robots_threads();
+
+        // [3] Initialize robots tasks
         init_robots_tasks();
 
-        // [3] Set load and unload locations
+        // [4] Set load and unload locations
         set_destination_to_load_location();
         set_destination_to_unload_location();
 
-        // [4] Initialize shortest path
+        // [5] Initialize shortest path
         find_shortest_path_by_bfs();
-
-        // [5] Create robots threads
-        init_robots_threads();
 
         // [6] Initialize message boxes
         init_message_boxes();
@@ -421,16 +419,16 @@ void cnn_thread() {
         memset(temp_steps, 0, sizeof(temp_steps));
 
         // [8] Initialize robots current status
-        int current_robot_row[robot_count];
-        int current_robot_col[robot_count];
-        int current_robot_payload[robot_count];
-        int current_robot_required_payload[robot_count];
-        int current_is_stopped[robot_count];
-        memset(current_robot_row, 0, sizeof(current_robot_row));
-        memset(current_robot_col, 0, sizeof(current_robot_col));
-        memset(current_robot_payload, 0, sizeof(current_robot_payload));
-        memset(current_robot_required_payload, 0, sizeof(current_robot_required_payload));
-        memset(current_is_stopped, 0, sizeof(current_is_stopped));
+        int received_robot_row[robot_count];
+        int received_robot_col[robot_count];
+        int received_robot_current_payload[robot_count];
+        int received_robot_required_payload[robot_count];
+        int received_is_stopped[robot_count];
+        memset(received_robot_row, 0, sizeof(received_robot_row));
+        memset(received_robot_col, 0, sizeof(received_robot_col));
+        memset(received_robot_current_payload, 0, sizeof(received_robot_current_payload));
+        memset(received_robot_required_payload, 0, sizeof(received_robot_required_payload));
+        memset(received_is_stopped, 0, sizeof(received_is_stopped));
 
         // [9] Main loop
         while (!check_all_robots_done()) {
@@ -441,11 +439,11 @@ void cnn_thread() {
                                 struct message msg = boxes_from_robots[i].msg;
 
                                 // Process the message
-                                current_robot_row[i] = msg.row;
-                                current_robot_col[i] = msg.col;
-                                current_robot_payload[i] = msg.current_payload;
-                                current_robot_required_payload[i] = msg.required_payload;
-                                current_is_stopped[i] = msg.is_stopped;
+                                received_robot_row[i] = msg.row;
+                                received_robot_col[i] = msg.col;
+                                received_robot_current_payload[i] = msg.current_payload;
+                                received_robot_required_payload[i] = msg.required_payload;
+                                received_is_stopped[i] = msg.is_stopped;
 
                                 // Reset the dirty bit
                                 boxes_from_robots[i].dirtyBit = 0;
@@ -457,9 +455,10 @@ void cnn_thread() {
                 print_map(robots, robot_count);
 
                 // [9-3] Print robot status
-                print_robot_current_status(current_robot_row, current_robot_col,
-                                           current_robot_payload, current_robot_required_payload,
-                                           current_is_stopped);
+                print_robot_current_status(received_robot_row, received_robot_col,
+                                           received_robot_current_payload,
+                                           received_robot_required_payload,
+                                           received_is_stopped);
 
 
                 // [9-3] Copy steps to temp_steps for collision check
@@ -472,7 +471,7 @@ void cnn_thread() {
                         struct robot *r = &robots[i];
 
                         // [9-4-a] When robot is done for the task then wait
-                        if (r->required_payload == 0) {
+                        if (received_robot_required_payload[i] == 0) {
                                 send_command_to_robot(r, CMD_WAIT, r->row, r->col);
                                 continue;
                         }
@@ -481,7 +480,7 @@ void cnn_thread() {
                         if (boxes_from_robots[r->index].dirtyBit != 0) continue;
 
                         // [9-4-c] When robot is moving to load location
-                        if (r->current_payload == 0) {
+                        if (received_robot_current_payload[i] == 0) {
                                 Location next_location = shortest_path_by_bfs[r->index][0][steps[i]];
 
                                 // When robot is at load location, then load the payload
@@ -492,20 +491,20 @@ void cnn_thread() {
                                 }
 
                                 // When collision occurs, then wait
-                                if(check_collision(r, temp_steps, current_is_stopped)) {
+                                if(check_collision(r, temp_steps, received_is_stopped)) {
                                         send_command_to_robot(r, CMD_WAIT, r->row, r->col);
-                                        current_is_stopped[i] = 1;
+                                        received_is_stopped[i] = 1;
                                         continue;
                                 }
 
                                 // Assign next move to the robot
                                 assign_next_move(r, 0, steps[i]);
-                                current_is_stopped[i] = 0;
+                                received_is_stopped[i] = 0;
                                 steps[i]++;
 
                         }
                         // [9-4-d] When robot is moving to unload location
-                        else if (r->current_payload == 1) {
+                        else if (received_robot_current_payload[i] == 1) {
                                 Location next_location = shortest_path_by_bfs[r->index][1][steps[i]];
 
                                 // When robot is at unload location, then unload the payload
@@ -515,15 +514,15 @@ void cnn_thread() {
                                 }
 
                                 // When collision occurs, then wait
-                                if(check_collision(r, temp_steps, current_is_stopped)) {
+                                if(check_collision(r, temp_steps, received_is_stopped)) {
                                         send_command_to_robot(r, CMD_WAIT, r->row, r->col);
-                                        current_is_stopped[i] = 1;
+                                        received_is_stopped[i] = 1;
                                         continue;
                                 }
 
                                 // Assign next move to the robot
                                 assign_next_move(r, 1, steps[i]);
-                                current_is_stopped[i] = 0;
+                                received_is_stopped[i] = 0;
                                 steps[i]++;
                         }
 
@@ -535,7 +534,7 @@ void cnn_thread() {
                 // [9-6] Increase step
                 increase_step();
 
-                // [9-3] Timer sleep for 1 second
+                // [9-7] Timer sleep for 1 second
                 timer_msleep(1000);
         }
 
