@@ -220,7 +220,7 @@ void assign_next_move(struct robot *r, int path_type, int step) {
 
 
 /* Finding Shortest Path by BFS  */
-int bfs(Location start, Location end, Location* path) {
+int bfs(Location start, Location end, Location* path, struct robot *r) {
 
         // BFS 초기화
         int queue_size = MAP_HEIGHT * MAP_WIDTH;
@@ -282,6 +282,7 @@ int bfs(Location start, Location end, Location* path) {
                 if (next_row >= 0 && next_row < MAP_HEIGHT
                         && next_col >= 0 && next_col < MAP_WIDTH
                         && map_draw_default[next_row][next_col] != 'X'
+                        && (map_draw_default[next_row][next_col] == ' ' || map_draw_default[next_row][next_col] == r->load_location || map_draw_default[next_row][next_col] == r->unload_location)
                         && !visited[next_row][next_col]) {
                         queue[rear++] = (Location){next_row, next_col};
                         visited[next_row][next_col] = 1;
@@ -327,8 +328,8 @@ void find_shortest_path_by_bfs() {
                 Location unload_location = {r->unload_location_row, r->unload_location_col};
 
                 // 경로 계산
-                bfs(start, load_location, shortest_path_by_bfs[i][0]);
-                bfs(load_location, unload_location, shortest_path_by_bfs[i][1]);
+                bfs(start, load_location, shortest_path_by_bfs[i][0], r);
+                bfs(load_location, unload_location, shortest_path_by_bfs[i][1],r );
         }
 
 }
@@ -537,6 +538,7 @@ void cnn_thread() {
         }
 
         printf("\n*** All robots are done! *** \n\n");
+
     }
 
 
