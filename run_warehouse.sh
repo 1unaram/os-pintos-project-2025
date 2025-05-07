@@ -10,6 +10,14 @@ fi
 NUM=$1
 LAYOUT=$2
 
+# Check if threads/build directory exists
+if [ ! -d "threads/build" ]; then
+  echo "[+] threads/build directory not found, running make in threads/"
+  cd threads/
+  make
+  cd ..
+fi
+
 echo "[+] Cleaning and building..."
 cd threads/build/
 make clean > ../../make_clean_result 2>&1
