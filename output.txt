@@ -1,0 +1,509 @@
+qemu-system-i386 -device isa-debug-exit -hda /tmp/pmQxKJJMyZ.dsk -m 4 -net none -nographic -monitor null
+WARNING: Image format was not specified for '/tmp/pmQxKJJMyZ.dsk' and probing guessed raw.
+         Automatically detecting the format is dangerous for raw images, write operations on block 0 will be restricted.
+         Specify the 'raw' format explicitly to remove the restrictions.
+PiLo hda1
+Loading..........
+Kernel command line: automated_warehouse 5 2A:4C:2B:2C:3A
+Pintos booting with 3,968 kB RAM...
+367 pages available in kernel pool.
+367 pages available in user pool.
+Calibrating timer...  523,468,800 loops/s.
+Boot complete.
+arguments list:automated_warehouse, 5, 2A:4C:2B:2C:3A
+
+
+=====================================
+*** Automated Warehouse Simulator ***
+***        20214234 김하람        ***
+=====================================
+
+
+=====================================
+STEP_INFO_START::0
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C                        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R1M0,R2M0,R3M0,R4M0,R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::0
+
+Current Robot Status:
+<Robot 1> Row: 0, Col: 0, Payload: 0, Required Payload: 0, Stopped: 0
+<Robot 2> Row: 0, Col: 0, Payload: 0, Required Payload: 0, Stopped: 0
+<Robot 3> Row: 0, Col: 0, Payload: 0, Required Payload: 0, Stopped: 0
+<Robot 4> Row: 0, Col: 0, Payload: 0, Required Payload: 0, Stopped: 0
+<Robot 5> Row: 0, Col: 0, Payload: 0, Required Payload: 0, Stopped: 0
+
+=====================================
+STEP_INFO_START::1
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C                        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R1M0,R2M0,R3M0,R4M0,R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::1
+
+Current Robot Status:
+<Robot 1> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 2> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 3> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 4> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::2
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C                        R1   X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R2M0,R3M0,R4M0,R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::2
+
+Current Robot Status:
+<Robot 1> Row: 5, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 3> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 4> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::3
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C                   R1   R2   X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R3M0,R4M0,R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::3
+
+Current Robot Status:
+<Robot 1> Row: 5, Col: 4, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 5, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 4> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::4
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6    R2   X    
+C              R1        R3   X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R4M0,R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::4
+
+Current Robot Status:
+<Robot 1> Row: 5, Col: 3, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 4, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 5, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::5
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5    R2   X    
+X         3    X    6         X    
+C         R1        R3   R4   X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:R5M0,
+A:
+B:
+C:
+STEP_INFO_DONE::5
+
+Current Robot Status:
+<Robot 1> Row: 5, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 3, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 5, Col: 4, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 5, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 6, Col: 5, Payload: 0, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::6
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4    R2   X    
+B         2    X    5         X    
+X         3    X    6         X    
+C    R1        R3   R4   R5   X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::6
+
+Current Robot Status:
+<Robot 1> Row: 5, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 2, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 5, Col: 3, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 5, Col: 4, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 5, Col: 5, Payload: 0, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::7
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    R2        X    
+B         2    X    5         X    
+X    R1   3    X    6         X    
+C         R3   R4   R5   S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::7
+
+Current Robot Status:
+<Robot 1> Row: 4, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 2, Col: 4, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 5, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 5, Col: 3, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 5, Col: 4, Payload: 0, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::8
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    R2M1      X    
+B    R1   2    X    5         X    
+X         3    X    6         X    
+C    R3   R4   R5        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::8
+
+Current Robot Status:
+<Robot 1> Row: 3, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 2, Col: 4, Payload: 1, Required Payload: 1, Stopped: 1
+<Robot 3> Row: 5, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 5, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 5, Col: 3, Payload: 0, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::9
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4    R2M1 X    
+B         R1   X    5         X    
+X    R3   3    X    6         X    
+C    R4   R5             S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::9
+
+Current Robot Status:
+<Robot 1> Row: 3, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 2, Col: 5, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 4, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 5, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 5, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::10
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B    R3   R1M1 X    5    R2M1 X    
+X    R4   R5   X    6         X    
+C                        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::10
+
+Current Robot Status:
+<Robot 1> Row: 3, Col: 2, Payload: 1, Required Payload: 1, Stopped: 1
+<Robot 2> Row: 3, Col: 5, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 4, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 4, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::11
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B    R1M1 R3   X    5         X    
+X    R4   R5M1 X    6    R2M1 X    
+C                        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::11
+
+Current Robot Status:
+<Robot 1> Row: 3, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 4, Col: 5, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 4, Col: 1, Payload: 0, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 4, Col: 2, Payload: 1, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::12
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X    R1M1 1    X    4         X    
+B    R4   R3M1 X    5         X    
+X    R5M1 3    X    6         X    
+C                        R2M1 X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::12
+
+Current Robot Status:
+<Robot 1> Row: 2, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 5, Col: 5, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 2, Payload: 1, Required Payload: 1, Stopped: 1
+<Robot 4> Row: 3, Col: 1, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 4, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::13
+MAP_INFO::
+X    X    X    X    X    X    X    
+A    R1M1      7              X    
+X         1    X    4         X    
+B    R3M1 R4   X    5         X    
+X    R5M1 3    X    6         X    
+C                   R2M1 S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:
+B:
+C:
+STEP_INFO_DONE::13
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 5, Col: 4, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 3, Col: 2, Payload: 0, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 4, Col: 1, Payload: 1, Required Payload: 1, Stopped: 1
+
+=====================================
+STEP_INFO_START::14
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B    R5M1 R4M1 X    5         X    
+X         3    X    6         X    
+C              R2M1      S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:R1M1,
+B:R3M1,
+C:
+STEP_INFO_DONE::14
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 0, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 2> Row: 5, Col: 3, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 0, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 4> Row: 3, Col: 2, Payload: 1, Required Payload: 1, Stopped: 1
+<Robot 5> Row: 3, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::15
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X    R5M1 1    X    4         X    
+B    R4M1 2    X    5         X    
+X         3    X    6         X    
+C         R2M1           S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:R1M0,
+B:R3M0,
+C:
+STEP_INFO_DONE::15
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 2> Row: 5, Col: 2, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 4> Row: 3, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 2, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::16
+MAP_INFO::
+X    X    X    X    X    X    X    
+A    R5M1      7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X    R4M1 3    X    6         X    
+C    R2M1                S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:R1M0,
+B:R3M0,
+C:
+STEP_INFO_DONE::16
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 2> Row: 5, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 4> Row: 4, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 1, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::17
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C    R4M1                S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:R1M0,R5M1,
+B:R3M0,
+C:R2M1,
+STEP_INFO_DONE::17
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 2> Row: 5, Col: 0, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 3> Row: 3, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 4> Row: 5, Col: 1, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 1, Col: 0, Payload: 1, Required Payload: 1, Stopped: 0
+
+=====================================
+STEP_INFO_START::18
+MAP_INFO::
+X    X    X    X    X    X    X    
+A              7              X    
+X         1    X    4         X    
+B         2    X    5         X    
+X         3    X    6         X    
+C                        S    X    
+X    X    X    X    X    W    X    
+
+PLACE_INFO::
+W:
+A:R1M0,R5M0,
+B:R3M0,
+C:R2M0,R4M1,
+STEP_INFO_DONE::18
+
+Current Robot Status:
+<Robot 1> Row: 1, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 2> Row: 5, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 3> Row: 3, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+<Robot 4> Row: 5, Col: 0, Payload: 1, Required Payload: 1, Stopped: 0
+<Robot 5> Row: 1, Col: 0, Payload: 0, Required Payload: 0, Stopped: 1
+
+
+
+=====================================
+*** All robots are done for tasks ***
+***   Shutting Down Simulator ..  ***
+=====================================
+
+
+Timer: 2027 ticks
+Thread: 1900 idle ticks, 127 kernel ticks, 0 user ticks
+Console: 14880 characters output
+Keyboard: 0 keys pressed
+Powering off...

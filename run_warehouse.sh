@@ -18,5 +18,5 @@ make > ../make_result 2>&1
 
 echo "[+] Running Pintos with automated_warehouse $NUM $LAYOUT..."
 cd build/
-../../utils/pintos automated_warehouse "$NUM" "$LAYOUT"
+../../utils/pintos automated_warehouse "$NUM" "$LAYOUT" 2>&1 | tee ../../output.txt
 
